@@ -125,6 +125,17 @@ func (a *Alerter) History() []Event {
 	return a.events
 }
 
+// FilterHistory returns all recorded events matching the given EventType.
+func (a *Alerter) FilterHistory(t EventType) []Event {
+	var filtered []Event
+	for _, e := range a.events {
+		if e.Type == t {
+			filtered = append(filtered, e)
+		}
+	}
+	return filtered
+}
+
 // indexPorts builds a lookup map keyed by "protocol:port" for fast diffing.
 func indexPorts(ports []scanner.PortInfo) map[string]scanner.PortInfo {
 	m := make(map[string]scanner.PortInfo, len(ports))
