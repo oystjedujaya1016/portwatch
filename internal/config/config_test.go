@@ -103,3 +103,26 @@ func TestLoad_InvalidInterval(t *testing.T) {
 		t.Error("expected error for invalid interval duration, got nil")
 	}
 }
+
+func TestLoad_EmptyFile(t *testing.T) {
+	// An empty config file should succeed and fall back to defaults.
+	dir := t.TempDir()
+	cfgPath := filepath.Join(dir, "portwatch.toml")
+
+	if err := os.WriteFile(cfgPath, []byte(""), 0644); err != nil {
+		t.Fatalf("failed to write temp config: %v", err)
+	}
+
+	cfg, err := config.Load(cfgPath)
+	if err != nil {
+		t.Fatalf("Load() with empty file should not error, got: %v", err)
+	}
+
+	if cfg.Interval <= 0 {
+		t.Errorf("expected positive default interval for empty config, got %v", cfg.Interval)
+	}
+
+	if cfg.StateFile == "" {
+		t.Error("expected non-empty default state file path for empty config")
+	}
+}
